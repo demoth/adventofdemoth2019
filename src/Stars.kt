@@ -1,11 +1,13 @@
 import java.io.File
+import java.lang.Exception
 import java.lang.IllegalStateException
 import kotlin.math.max
 
 val tasks: Map<String, (Sequence<String>) -> Any> = mapOf(
     "star1" to ::calculateFuel,
     "star2" to ::calculateFuelIncludingFuel,
-    "star3" to ::runOpcode
+    "star3" to ::runOpcode,
+    "star4" to ::findNounAndVerb
 )
 
 fun main(args: Array<String>) {
@@ -14,15 +16,15 @@ fun main(args: Array<String>) {
     println("Solution for ${args.first()}: $solution")
 }
 
-fun calculateFuel(input: Sequence<String>) : Int {
+fun calculateFuel(input: Sequence<String>): Int {
     return input
         .map { it.toInt() }
-        .map { requiredFuel(it)}
+        .map { requiredFuel(it) }
         .sum()
 
 }
 
-fun calculateFuelIncludingFuel(input: Sequence<String>) : Int {
+fun calculateFuelIncludingFuel(input: Sequence<String>): Int {
     return input
         .map { it.toInt() }
         .map { requiredFuelIncludingFuel(it) }
@@ -39,7 +41,7 @@ fun requiredFuelIncludingFuel(mass: Int): Int {
 }
 
 fun runOpcode(input: Sequence<String>): Int {
-    val memory = input.flatMap { it.split(",").asSequence()}.map { it.toInt() }.toMutableList()
+    val memory = input.flatMap { it.split(",").asSequence() }.map { it.toInt() }.toMutableList()
     var i = 0
     while (true) {
         if (i >= memory.size)
@@ -57,4 +59,26 @@ fun runOpcode(input: Sequence<String>): Int {
             else -> throw IllegalStateException("Unexpected opcode '${memory[i]}'")
         }
     }
+}
+
+fun findNounAndVerb(input: Sequence<String>): Pair<Int, Int> {
+    val initialMemory = input.flatMap { it.split(",").asSequence() }.toList()
+    var workingMemory: ArrayList<String>
+    for (noun in 0..99) {
+        for (verb in 0..99) {
+            workingMemory = ArrayList(initialMemory)
+            workingMemory[1] = noun.toString()
+            workingMemory[2] = verb.toString()
+            val result = try {
+                runOpcode(workingMemory.asSequence())
+            } catch (e: Exception) {
+                0
+            }
+            if (result == 19690720) {
+                return Pair(noun, verb)
+            }
+
+        }
+    }
+    throw IllegalStateException("Did not compute")
 }
