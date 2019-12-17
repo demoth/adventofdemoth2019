@@ -1,3 +1,3 @@
 fun main(){
-    println(calculateFuelIncludingFuel(listOf("100756")))
+    println(calculateFuelIncludingFuel(sequenceOf("100756")))
 }
